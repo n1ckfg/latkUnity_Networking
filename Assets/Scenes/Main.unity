@@ -122,6 +122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 39638224}
   - component: {fileID: 39638223}
+  - component: {fileID: 39638225}
   m_Layer: 0
   m_Name: NETWORK_MANAGER
   m_TagString: Untagged
@@ -140,6 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 437ba1d10234df544951382d22a4a162, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  latkd: {fileID: 39638225}
   serverAddress: vr.fox-gieg.com
   serverPort: 8080
   doDebug: 1
@@ -156,6 +158,46 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &39638225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 39638222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf4d481b0b96b34ea4131ea70e7b493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  latk: {fileID: 1779766903}
+  brushPrefab: {fileID: 11487128, guid: beb8a1e04a58a4494ae8870cdc802e88, type: 2}
+  brushMode: 0
+  brushMat:
+  - {fileID: 2100000, guid: 7ff5f226683f27a4f8e5be4f5a466cba, type: 2}
+  color: {r: 1, g: 0, b: 0, a: 1}
+  brushSize: 0.05
+  minDistance: 0
+  latkSettings: 2
+  createOnStart: 1
+  strokes: []
+  transformMatrix:
+    e00: 0
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 0
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 0
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 0
+  checkSelfDestruct: 0
 --- !u!1 &635439250
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,6 +317,12 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd6b520ae512fe14284192c59b70f0f3, type: 2}
   m_IsPrefabAsset: 0
+--- !u!114 &1779766903 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 11437508, guid: bd6b520ae512fe14284192c59b70f0f3,
+    type: 2}
+  m_PrefabInternal: {fileID: 1779766902}
+  m_Script: {fileID: 11500000, guid: 62906993b5f7c4869995b8ade83c5ba0, type: 3}
 --- !u!1 &1839753545
 GameObject:
   m_ObjectHideFlags: 0

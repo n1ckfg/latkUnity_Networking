@@ -1,9 +1,13 @@
 using System;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using SimpleJSON;
 using BestHTTP.SocketIO;
 
 public class LatkNetwork : MonoBehaviour {
 
+    public LatkDrawing latkd;
     public string serverAddress = "vr.fox-gieg.com";
     public int serverPort = 8080;
     public bool doDebug = true;
@@ -85,7 +89,22 @@ public class LatkNetwork : MonoBehaviour {
 
         switch (eventName) {
             case "newFrameFromServer":
-                // TODO
+                // ~ ~ ~ ~ ~ ~ ~ ~ ~ 
+                JSONNode data = JSON.Parse(jsonString);
+                if (doDebug) Debug.Log("Receiving new frame " + data[0]["index"] + " with " + data.Count + " strokes.");
+                List<LatkStroke> newStrokes = new List<LatkStroke>();
+
+                for (var i = 0; i < data.Count; i++) {
+                    List<Vector3> points = getPointsFromJson(data[i]["points"]);
+                    LatkStroke brush = latkd.makeLine(points);
+
+                    newStrokes.Add(brush);
+                }
+
+                int index = data[0]["index"].AsInt;
+                //int last = layers.Count - 1;
+                //if (newStrokes.Count > 0 && layers.Count > 0 && layers[last].frames) layers[last].frames[index] = newStrokes;
+                // ~ ~ ~ ~ ~ ~ ~ ~ ~
                 break;
         }
     }
@@ -99,6 +118,18 @@ public class LatkNetwork : MonoBehaviour {
         if (doDebug) {
             Debug.Log("Closed connection");
         }
+    }
+
+    public List<Vector3> getPointsFromJson(JSONNode ptJson) {
+        List<Vector3> returns = new List<Vector3>();
+        for (var j = 0; j < ptJson.Count; j++) {
+            var co = ptJson[j]["co"];
+
+            //if (j === 0 || !useMinDistance || (useMinDistance && origVerts[j].distanceTo(origVerts[j-1]) > minDistance)) {
+            returns.Add(new Vector3(co[0].AsFloat, co[1].AsFloat, co[2].AsFloat));
+            //}
+        }
+        return returns;
     }
 
 }
