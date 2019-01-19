@@ -7,10 +7,12 @@ using BestHTTP.SocketIO;
 
 public class LatkNetwork : MonoBehaviour {
 
+    public LightningArtist latk;
     public LatkDrawing latkd;
     public string serverAddress = "vr.fox-gieg.com";
     public int serverPort = 8080;
     public bool doDebug = true;
+    public float scaler = 1f;
 
     private SocketManager socketManager;
     private string socketAddress;
@@ -92,13 +94,10 @@ public class LatkNetwork : MonoBehaviour {
                 // ~ ~ ~ ~ ~ ~ ~ ~ ~ 
                 JSONNode data = JSON.Parse(jsonString);
                 if (doDebug) Debug.Log("Receiving new frame " + data[0]["index"] + " with " + data.Count + " strokes.");
-                List<LatkStroke> newStrokes = new List<LatkStroke>();
 
                 for (var i = 0; i < data.Count; i++) {
-                    List<Vector3> points = getPointsFromJson(data[i]["points"]);
-                    LatkStroke brush = latkd.makeLine(points);
-
-                    newStrokes.Add(brush);
+                    List<Vector3> points = getPointsFromJson(data[i]["points"], scaler);
+                    latkd.makeCurve(points, latk.killStrokes, latk.strokeLife);
                 }
 
                 int index = data[0]["index"].AsInt;
@@ -109,8 +108,8 @@ public class LatkNetwork : MonoBehaviour {
         }
     }
 
-    public void sendStrokeData(string data) {
-        socketManager.Socket.Emit("clientStrokeToServer", data);
+    public void sendStrokeData(List<Vector3> data) {
+        socketManager.Socket.Emit("clientStrokeToServer", setJsonFromPoints(data));
     }
 
     private void OnApplicationQuit() {
@@ -120,16 +119,41 @@ public class LatkNetwork : MonoBehaviour {
         }
     }
 
-    public List<Vector3> getPointsFromJson(JSONNode ptJson) {
+    public List<Vector3> getPointsFromJson(JSONNode ptJson, float scaler) {
         List<Vector3> returns = new List<Vector3>();
-        for (var j = 0; j < ptJson.Count; j++) {
-            var co = ptJson[j]["co"];
+        //try {
+            for (var j = 0; j < ptJson.Count; j++) {
+                var co = ptJson[j]["co"];
 
-            //if (j === 0 || !useMinDistance || (useMinDistance && origVerts[j].distanceTo(origVerts[j-1]) > minDistance)) {
-            returns.Add(new Vector3(co[0].AsFloat, co[1].AsFloat, co[2].AsFloat));
-            //}
-        }
+                //if (j === 0 || !useMinDistance || (useMinDistance && origVerts[j].distanceTo(origVerts[j-1]) > minDistance)) {
+                returns.Add(new Vector3(co[0].AsFloat, co[1].AsFloat, co[2].AsFloat) * scaler);
+                //}
+            }
+        //} catch (Exception e) { }
         return returns;
+    }
+
+    public String setJsonFromPoints(List<Vector3> points) {
+        List<String> sb = new List<String>();
+        //try {
+            sb.Add("{");
+            sb.Add("\"timestamp\": " + new System.DateTime() + ",");
+            sb.Add("\"index\": " + latk.layerList[latk.layerList.Count - 1].currentFrame + ",");
+            sb.Add("\"color\": [" + latk.mainColor[0] + ", " + latk.mainColor[1] + ", " + latk.mainColor[2] + "],");
+            sb.Add("\"points\": [");
+            for (var j = 0; j < points.Count; j++) {
+                sb.Add("{\"co\": [" + points[j].x + ", " + points[j].y + ", " + points[j].z + "]");
+                if (j >= points.Count - 1) {
+                    sb[sb.Count - 1] += "}";
+                } else {
+                    sb[sb.Count - 1] += "},";
+                }
+            }
+            sb.Add("]");
+            sb.Add("}");
+        //} catch (Exception e) { }
+
+        return string.Join("\n", sb.ToArray());
     }
 
 }
