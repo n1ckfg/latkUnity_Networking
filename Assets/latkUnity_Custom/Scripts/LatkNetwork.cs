@@ -13,6 +13,8 @@ public class LatkNetwork : MonoBehaviour {
     public int serverPort = 8080;
     public bool doDebug = true;
     public float scaler = 1f;
+    public bool streamToLatk = false;
+    public bool armRecordToLatk = false;
 
     private SocketManager socketManager;
     private string socketAddress;
@@ -25,6 +27,17 @@ public class LatkNetwork : MonoBehaviour {
 	private void Start() {
         socketAddress = "http://" + serverAddress + ":" + serverPort + "/socket.io/:8443";
         initSocketManager(socketAddress);
+    }
+
+    private void LateUpdate() {
+        if (streamToLatk && armRecordToLatk) { 
+            latkd.recordToLatk();
+            foreach (LatkStroke stroke in latkd.strokes) {
+                Destroy(stroke.gameObject);
+            }
+            latkd.strokes = new List<LatkStroke>();
+            armRecordToLatk = false;
+        }
     }
 
     private void initSocketManager(string uri) {
@@ -73,6 +86,7 @@ public class LatkNetwork : MonoBehaviour {
     }
 
     void receivedLocalSocketMessage(Socket socket, Packet packet, params object[] args) {
+        armRecordToLatk = true;
         string eventName = "data";
         string jsonString;
         if (packet.SocketIOEvent == SocketIOEventTypes.Event) {
