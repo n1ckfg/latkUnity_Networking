@@ -142,8 +142,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   latk: {fileID: 1779766903}
   latkd: {fileID: 493996630}
-  serverAddress: vr.fox-gieg.com
-  serverPort: 80
+  serverAddress: localhost
+  serverPort: 8080
   doDebug: 1
   scaler: 1
   streamToLatk: 1
@@ -216,7 +216,8 @@ MonoBehaviour:
     e31: 0
     e32: 0
     e33: 0
-  checkSelfDestruct: 0
+  strokeLife: 1
+  checkSelfDestruct: 1
 --- !u!4 &493996631
 Transform:
   m_ObjectHideFlags: 0
@@ -458,6 +459,14 @@ Prefab:
         type: 2}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11437508, guid: bd6b520ae512fe14284192c59b70f0f3, type: 2}
+      propertyPath: killStrokes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11437508, guid: bd6b520ae512fe14284192c59b70f0f3, type: 2}
+      propertyPath: strokeLife
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bd6b520ae512fe14284192c59b70f0f3, type: 2}

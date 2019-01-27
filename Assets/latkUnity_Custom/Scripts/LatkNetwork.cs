@@ -123,8 +123,10 @@ public class LatkNetwork : MonoBehaviour {
     }
 
     public void sendStrokeData(List<Vector3> data) {
-        socketManager.Socket.Emit("clientStrokeToServer", setJsonFromPoints(data));
-    }
+		String s = setJsonFromPoints(data);
+		socketManager.Socket.Emit("clientStrokeToServer", s);
+		Debug.Log(s);
+	}
 
     private void OnApplicationQuit() {
         socketManager.Close();
@@ -147,27 +149,26 @@ public class LatkNetwork : MonoBehaviour {
         return returns;
     }
 
-    public String setJsonFromPoints(List<Vector3> points) {
+    public JSONNode setJsonFromPoints(List<Vector3> points) {
         List<String> sb = new List<String>();
-        //try {
-            sb.Add("{");
-            sb.Add("\"timestamp\": " + new System.DateTime() + ",");
-            sb.Add("\"index\": " + latk.layerList[latk.layerList.Count - 1].currentFrame + ",");
-            sb.Add("\"color\": [" + latk.mainColor[0] + ", " + latk.mainColor[1] + ", " + latk.mainColor[2] + "],");
-            sb.Add("\"points\": [");
-            for (var j = 0; j < points.Count; j++) {
-                sb.Add("{\"co\": [" + points[j].x + ", " + points[j].y + ", " + points[j].z + "]");
-                if (j >= points.Count - 1) {
-                    sb[sb.Count - 1] += "}";
-                } else {
-                    sb[sb.Count - 1] += "},";
-                }
+        
+		sb.Add("{");
+        sb.Add("\"timestamp\": \"" + new System.DateTime() + "\",");
+        sb.Add("\"index\": " + latk.layerList[latk.layerList.Count - 1].currentFrame + ",");
+        sb.Add("\"color\": [" + latk.mainColor[0] + ", " + latk.mainColor[1] + ", " + latk.mainColor[2] + "],");
+        sb.Add("\"points\": [");
+        for (var j = 0; j < points.Count; j++) {
+            sb.Add("{\"co\": [" + points[j].x + ", " + points[j].y + ", " + points[j].z + "]");
+            if (j >= points.Count - 1) {
+                sb[sb.Count - 1] += "}";
+            } else {
+                sb[sb.Count - 1] += "},";
             }
-            sb.Add("]");
-            sb.Add("}");
-        //} catch (Exception e) { }
+        }
+        sb.Add("]");
+        sb.Add("}");
 
-        return string.Join("\n", sb.ToArray());
+		return JSON.Parse(string.Join("\n", sb.ToArray()));
     }
 
 }
