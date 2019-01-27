@@ -143,7 +143,7 @@ MonoBehaviour:
   latk: {fileID: 1779766903}
   latkd: {fileID: 493996630}
   serverAddress: vr.fox-gieg.com
-  serverPort: 8080
+  serverPort: 80
   doDebug: 1
   scaler: 1
   streamToLatk: 1
