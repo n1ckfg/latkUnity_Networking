@@ -22,16 +22,14 @@ public class LatkInputMouseNet : MonoBehaviour {
             mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, zPos));
             latk.target.transform.position = mousePos;
             latk.clicked = true;
-            if (latk.clicked && !latk.isDrawing) {
-                try {
-                    List<Vector3> points = latk.getLastStroke().points;
-                    latkNetwork.sendStrokeData(points);
-                } catch (Exception e) {  };
-            }
         } else {
 			latk.clicked = false;
-
         }
+
+		if (Input.GetMouseButtonUp(0)) {
+			List<Vector3> points = latk.getLastStroke().points;
+			latkNetwork.sendStrokeData(points);
+		}
 	}
 
 }

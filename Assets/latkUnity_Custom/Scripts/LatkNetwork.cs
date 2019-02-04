@@ -105,7 +105,6 @@ public class LatkNetwork : MonoBehaviour {
 
         switch (eventName) {
             case "newFrameFromServer":
-                // ~ ~ ~ ~ ~ ~ ~ ~ ~ 
                 JSONNode data = JSON.Parse(jsonString);
                 if (doDebug) Debug.Log("Receiving new frame " + data[0]["index"] + " with " + data.Count + " strokes.");
 
@@ -115,17 +114,19 @@ public class LatkNetwork : MonoBehaviour {
                 }
 
                 int index = data[0]["index"].AsInt;
-                //int last = layers.Count - 1;
-                //if (newStrokes.Count > 0 && layers.Count > 0 && layers[last].frames) layers[last].frames[index] = newStrokes;
-                // ~ ~ ~ ~ ~ ~ ~ ~ ~
                 break;
         }
     }
 
     public void sendStrokeData(List<Vector3> data) {
-		String s = setJsonFromPoints(data);
+		StartCoroutine(doSendStrokeData(data));
+	}
+
+	private IEnumerator doSendStrokeData(List<Vector3> data) {
+		string s = setJsonFromPoints(data);
 		socketManager.Socket.Emit("clientStrokeToServer", s);
 		Debug.Log(s);
+		yield return null;
 	}
 
     private void OnApplicationQuit() {
@@ -137,29 +138,25 @@ public class LatkNetwork : MonoBehaviour {
 
     public List<Vector3> getPointsFromJson(JSONNode ptJson, float scaler) {
         List<Vector3> returns = new List<Vector3>();
-        //try {
-            for (var j = 0; j < ptJson.Count; j++) {
-                var co = ptJson[j]["co"];
+        for (int i = 0; i < ptJson.Count; i++) {
+            var co = ptJson[i]["co"];
 
-                //if (j === 0 || !useMinDistance || (useMinDistance && origVerts[j].distanceTo(origVerts[j-1]) > minDistance)) {
-                returns.Add(new Vector3(co[0].AsFloat, co[1].AsFloat, co[2].AsFloat) * scaler);
-                //}
-            }
-        //} catch (Exception e) { }
+            returns.Add(new Vector3(co[0].AsFloat, co[1].AsFloat, co[2].AsFloat) * scaler);
+        }
         return returns;
     }
 
-    public JSONNode setJsonFromPoints(List<Vector3> points) {
-        List<String> sb = new List<String>();
+    public string setJsonFromPoints(List<Vector3> points) {
+        List<string> sb = new List<string>();
         
 		sb.Add("{");
         sb.Add("\"timestamp\": \"" + new System.DateTime() + "\",");
         sb.Add("\"index\": " + latk.layerList[latk.layerList.Count - 1].currentFrame + ",");
         sb.Add("\"color\": [" + latk.mainColor[0] + ", " + latk.mainColor[1] + ", " + latk.mainColor[2] + "],");
         sb.Add("\"points\": [");
-        for (var j = 0; j < points.Count; j++) {
-            sb.Add("{\"co\": [" + points[j].x + ", " + points[j].y + ", " + points[j].z + "]");
-            if (j >= points.Count - 1) {
+        for (int i = 0; i < points.Count; i++) {
+            sb.Add("{\"co\": [" + points[i].x + ", " + points[i].y + ", " + points[i].z + "]");
+            if (i >= points.Count - 1) {
                 sb[sb.Count - 1] += "}";
             } else {
                 sb[sb.Count - 1] += "},";
@@ -168,7 +165,7 @@ public class LatkNetwork : MonoBehaviour {
         sb.Add("]");
         sb.Add("}");
 
-		return JSON.Parse(string.Join("\n", sb.ToArray()));
+		return string.Join("\n", sb.ToArray());
     }
 
 }
