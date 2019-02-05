@@ -15,7 +15,7 @@ public class LatkInputMouseNet : MonoBehaviour {
 		if (brushInputButtons == null) brushInputButtons = GetComponent<LatkInputButtons>();
 	}
 
-	private void Update() {
+    private void Update() {
         // draw
         if (Input.GetMouseButton(0) && GUIUtility.hotControl == 0) {
             Vector3 mousePos = Vector3.zero;
@@ -23,13 +23,14 @@ public class LatkInputMouseNet : MonoBehaviour {
             latk.target.transform.position = mousePos;
             latk.clicked = true;
         } else {
-			latk.clicked = false;
+            latk.clicked = false;
         }
+    }
 
-		if (Input.GetMouseButtonUp(0)) {
-			List<Vector3> points = latk.getLastStroke().points;
-			latkNetwork.sendStrokeData(points);
-		}
+    private void LateUpdate() {
+        if (latk.clicked) {
+            latkNetwork.sendStrokeData(latk.getLastStroke().points);
+        }
 	}
 
 }

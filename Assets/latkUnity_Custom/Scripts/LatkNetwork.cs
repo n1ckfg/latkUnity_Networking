@@ -7,6 +7,20 @@ using BestHTTP.SocketIO;
 
 public class LatkNetwork : MonoBehaviour {
 
+    [System.Serializable]
+    public struct WsPoint {
+        public float[] co;
+    }
+
+    [System.Serializable]
+    public struct WsStroke {
+        public long timestamp;
+        public int index;
+        public float[] color;
+        public WsPoint[] points;
+    }
+
+
     public LightningArtist latk;
     public LatkDrawing latkd;
     public string serverAddress = "vr.fox-gieg.com";
@@ -147,25 +161,28 @@ public class LatkNetwork : MonoBehaviour {
     }
 
     public string setJsonFromPoints(List<Vector3> points) {
-        List<string> sb = new List<string>();
-        
-		sb.Add("{");
-        sb.Add("\"timestamp\": \"" + new System.DateTime() + "\",");
-        sb.Add("\"index\": " + latk.layerList[latk.layerList.Count - 1].currentFrame + ",");
-        sb.Add("\"color\": [" + latk.mainColor[0] + ", " + latk.mainColor[1] + ", " + latk.mainColor[2] + "],");
-        sb.Add("\"points\": [");
-        for (int i = 0; i < points.Count; i++) {
-            sb.Add("{\"co\": [" + points[i].x + ", " + points[i].y + ", " + points[i].z + "]");
-            if (i >= points.Count - 1) {
-                sb[sb.Count - 1] += "}";
-            } else {
-                sb[sb.Count - 1] += "},";
-            }
-        }
-        sb.Add("]");
-        sb.Add("}");
+        System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+        long cur_time = (long)(System.DateTime.UtcNow - epochStart).TotalSeconds;
+        WsStroke stroke = new WsStroke();
 
-		return string.Join("\n", sb.ToArray());
+        stroke.timestamp = cur_time;
+        stroke.index = latk.layerList[latk.currentLayer].currentFrame;
+        stroke.color = new float[3];
+        stroke.color[0] = latk.mainColor[0];
+        stroke.color[1] = latk.mainColor[1];
+        stroke.color[2] = latk.mainColor[2];
+
+        stroke.points = new WsPoint[points.Count];
+        for (int i = 0; i < stroke.points.Length; i++) {
+            WsPoint point = new WsPoint();
+            point.co = new float[3];
+            point.co[0] = points[i].x;
+            point.co[1] = points[i].y;
+            point.co[2] = points[i].z;
+            stroke.points[i] = point;
+        }
+
+        return JsonUtility.ToJson(stroke);
     }
 
 }
