@@ -160,13 +160,18 @@ public class LatkNetwork : MonoBehaviour {
         return returns;
     }
 
+	public long getUnixTime() {
+		System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+		return (long)(System.DateTime.UtcNow - epochStart).TotalMilliseconds;
+	}
+
     public string setJsonFromPoints(List<Vector3> points) {
-        System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
-        long cur_time = (long)(System.DateTime.UtcNow - epochStart).TotalSeconds;
+
         WsStroke stroke = new WsStroke();
 
-        stroke.timestamp = cur_time;
+        stroke.timestamp = getUnixTime();
         stroke.index = latk.layerList[latk.currentLayer].currentFrame;
+
         stroke.color = new float[3];
         stroke.color[0] = latk.mainColor[0];
         stroke.color[1] = latk.mainColor[1];
